@@ -6,7 +6,7 @@ export default function rehypeStyling() {
   const onVisit = (node: Text, index: number | undefined, parent: Parent | undefined) => {
     if (!parent || index === undefined || !('children' in parent)) return;
 
-    const styleRegex = /^{([^}]+)}/;
+    const styleRegex = /^{([^}]*)}/;
     const match = node.value.match(styleRegex);
     if (!match) return;
 

@@ -1,0 +1,71 @@
+{
+  "name": "rehype-styling",
+  "version": "1.0.0",
+  "description": "Rehype plugin designed for remark to extract CSS styles from Markdown text and intelligently apply them to elements",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "test": "vitest",
+    "lint": "eslint src --ext .ts",
+    "prepublishOnly": "npm run build",
+    "release": "npm run test && npm run build && npm publish"
+  },
+  "keywords": [
+    "rehype",
+    "rehype-plugin",
+    "remark",
+    "remark-plugin",
+    "markdown",
+    "markdown-styling",
+    "styling",
+    "css",
+    "styles",
+    "html",
+    "transform",
+    "inline-styles",
+    "markdown-enhancement"
+  ],
+  "author": "Matthieu Conti",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/m-conti/rehype-styling.git"
+  },
+  "bugs": {
+    "url": "https://github.com/m-conti/rehype-styling/issues"
+  },
+  "homepage": "https://github.com/m-conti/rehype-styling#readme",
+  "peerDependencies": {
+    "unist-util-visit": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/hast": "^3.0.4",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "hast": "^1.0.0",
+    "hast-util-from-html": "^2.0.0",
+    "rehype": "^13.0.0",
+    "rehype-parse": "^9.0.1",
+    "rehype-stringify": "^10.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "unified": "^11.0.0",
+    "unist-util-visit": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}

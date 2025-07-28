@@ -445,5 +445,69 @@ describe('rehype-styling', () => {
       // Should remove the text node since it becomes empty after trimming
       expect(divElement.children).toHaveLength(0);
     });
+
+    it('handles complex real-world content with bold text and styling', async () => {
+      const processor = createProcessor();
+      const tree: Root = {
+        type: 'root',
+        children: [
+          {
+            type: 'element',
+            tagName: 'li',
+            properties: {},
+            children: [
+              { 
+                type: 'text', 
+                value: "let's " 
+              },
+              {
+                type: 'element',
+                tagName: 'strong',
+                properties: {},
+                children: [
+                  { 
+                    type: 'text', 
+                    value: '{color: red;}Evaluate the environmental footprint of digital devices'
+                  }
+                ]
+              },
+              { 
+                type: 'text', 
+                value: ' with the exact technical specifications or from model names,' 
+              }
+            ]
+          }
+        ]
+      };
+      
+      const result = await processor.run(tree) as Root;
+      const liElement = result.children[0] as Element;
+      
+      // The style should be applied to the strong element since the style is inside its text content
+      const strongElement = liElement.children[1] as Element;
+      expect(strongElement.properties).toEqual({
+        style: 'color: red;'
+      });
+      
+      // The text content should be cleaned up
+      expect(strongElement.children[0]).toEqual({
+        type: 'text',
+        value: 'Evaluate the environmental footprint of digital devices'
+      });
+      
+      // Verify the overall structure is preserved
+      expect(liElement.children).toHaveLength(3);
+      expect(liElement.children[0]).toEqual({
+        type: 'text',
+        value: "let's "
+      });
+      expect(liElement.children[2]).toEqual({
+        type: 'text',
+        value: ' with the exact technical specifications or from model names,'
+      });
+      
+      // The li element should not have styles since the style was inside the strong element
+      expect(liElement.properties).toEqual({});
+    });
   });
 });

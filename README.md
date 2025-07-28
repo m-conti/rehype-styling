@@ -163,6 +163,28 @@ The plugin works automatically without any configuration options. It uses smart 
 </article>
 ```
 
+### Bold/Strong Text Styling
+
+**Input:**
+```html
+<p>Here's some <strong>{color: red; font-weight: 900;}important information</strong> to consider.</p>
+```
+
+**Output:**
+```html
+<p>Here's some <strong style="color: red; font-weight: 900;">important information</strong> to consider.</p>
+```
+
+**Complex Example:**
+```html
+<li>Let's <strong>{color: #059669; background: #dcfce7; padding: 2px 6px; border-radius: 4px;}evaluate the environmental footprint</strong> of digital devices</li>
+```
+
+**Output:**
+```html
+<li>Let's <strong style="color: #059669; background: #dcfce7; padding: 2px 6px; border-radius: 4px;">evaluate the environmental footprint</strong> of digital devices</li>
+```
+
 ## How It Works
 
 1. The plugin visits all text nodes in the HTML tree
@@ -216,6 +238,33 @@ Check out our {color: #3182ce; text-decoration: underline; font-weight: 500;}[ma
 ### {color: #e53e3e;}❌ Common Mistakes
 
 {background: #fff5f5; border: 1px solid #feb2b2; padding: 1rem; border-radius: 6px;}Avoid this pattern as it can lead to unexpected behavior.
+```
+
+### Styling Bold/Strong Text
+
+The plugin works seamlessly with Markdown bold text (`**bold**` or `__bold__`) by applying styles directly to the `<strong>` element:
+
+```markdown
+Here's some regular text with **{color: #dc2626; font-weight: 900;}important bold text** that stands out.
+
+- Let's **{color: #059669; background: #dcfce7; padding: 2px 6px; border-radius: 4px;}evaluate the environmental footprint** of digital devices
+- Consider **{color: #7c3aed; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);}technical specifications** when making decisions
+- Always **{background: linear-gradient(45deg, #ff6b6b, #4ecdc4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}double-check your work** before submitting
+
+You can also combine with other formatting:
+- **{font-size: 1.2em; color: #1e40af;}Bold and larger text**
+- ***{color: #be185d; font-style: italic;}Bold italic with custom color***
+- **{border: 2px solid #f59e0b; padding: 4px 8px; border-radius: 6px; background: #fef3c7;}Boxed important text**
+```
+
+This generates HTML like:
+```html
+<p>Here's some regular text with <strong style="color: #dc2626; font-weight: 900;">important bold text</strong> that stands out.</p>
+
+<ul>
+  <li>Let's <strong style="color: #059669; background: #dcfce7; padding: 2px 6px; border-radius: 4px;">evaluate the environmental footprint</strong> of digital devices</li>
+  <li>Consider <strong style="color: #7c3aed; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">technical specifications</strong> when making decisions</li>
+</ul>
 ```
 
 ### Educational Content

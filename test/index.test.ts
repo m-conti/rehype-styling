@@ -640,5 +640,184 @@ describe('rehype-styling', () => {
         value: 'together'
       });
     });
+
+    it('handles class selectors', async () => {
+      const processor = createProcessor();
+      const tree: Root = {
+        type: 'root',
+        children: [
+          {
+            type: 'element',
+            tagName: 'p',
+            properties: {},
+            children: [
+              { 
+                type: 'text', 
+                value: '{.highlight .important}Styled text with classes' 
+              }
+            ]
+          }
+        ]
+      };
+      
+      const result = await processor.run(tree) as Root;
+      const pElement = result.children[0] as Element;
+      
+      expect(pElement.properties).toEqual({
+        className: 'highlight important'
+      });
+      expect(pElement.children[0]).toEqual({
+        type: 'text',
+        value: 'Styled text with classes'
+      });
+    });
+
+    it('handles ID selectors', async () => {
+      const processor = createProcessor();
+      const tree: Root = {
+        type: 'root',
+        children: [
+          {
+            type: 'element',
+            tagName: 'div',
+            properties: {},
+            children: [
+              { 
+                type: 'text', 
+                value: '{#my-unique-id}Content with ID' 
+              }
+            ]
+          }
+        ]
+      };
+      
+      const result = await processor.run(tree) as Root;
+      const divElement = result.children[0] as Element;
+      
+      expect(divElement.properties).toEqual({
+        id: 'my-unique-id'
+      });
+      expect(divElement.children[0]).toEqual({
+        type: 'text',
+        value: 'Content with ID'
+      });
+    });
+
+    it('handles HTML attributes', async () => {
+      const processor = createProcessor();
+      const tree: Root = {
+        type: 'root',
+        children: [
+          {
+            type: 'element',
+            tagName: 'span',
+            properties: {},
+            children: [
+              { 
+                type: 'text', 
+                value: '{data-test="value" title="tooltip"}Text with attributes' 
+              }
+            ]
+          }
+        ]
+      };
+      
+      const result = await processor.run(tree) as Root;
+      const spanElement = result.children[0] as Element;
+      
+      expect(spanElement.properties).toEqual({
+        'data-test': 'value',
+        title: 'tooltip'
+      });
+    });
+
+    it('handles mixed attributes (classes, ID, styles, and attributes)', async () => {
+      const processor = createProcessor();
+      const tree: Root = {
+        type: 'root',
+        children: [
+          {
+            type: 'element',
+            tagName: 'article',
+            properties: {},
+            children: [
+              { 
+                type: 'text', 
+                value: '{.card .featured #main-article color: blue; padding: 20px; data-category="tech" aria-label="Featured article"}Complex styled content' 
+              }
+            ]
+          }
+        ]
+      };
+      
+      const result = await processor.run(tree) as Root;
+      const articleElement = result.children[0] as Element;
+      
+      expect(articleElement.properties).toEqual({
+        className: 'card featured',
+        id: 'main-article',
+        style: 'color: blue; padding: 20px;',
+        'data-category': 'tech',
+        'aria-label': 'Featured article'
+      });
+    });
+
+    it('merges with existing classes', async () => {
+      const processor = createProcessor();
+      const tree: Root = {
+        type: 'root',
+        children: [
+          {
+            type: 'element',
+            tagName: 'div',
+            properties: {
+              className: 'existing-class'
+            },
+            children: [
+              { 
+                type: 'text', 
+                value: '{.new-class .another-class}Text content' 
+              }
+            ]
+          }
+        ]
+      };
+      
+      const result = await processor.run(tree) as Root;
+      const divElement = result.children[0] as Element;
+      
+      expect(divElement.properties).toEqual({
+        className: 'existing-class new-class another-class'
+      });
+    });
+
+    it('merges with existing styles', async () => {
+      const processor = createProcessor();
+      const tree: Root = {
+        type: 'root',
+        children: [
+          {
+            type: 'element',
+            tagName: 'p',
+            properties: {
+              style: 'margin: 10px;'
+            },
+            children: [
+              { 
+                type: 'text', 
+                value: '{color: red; font-size: 14px;}Text content' 
+              }
+            ]
+          }
+        ]
+      };
+      
+      const result = await processor.run(tree) as Root;
+      const pElement = result.children[0] as Element;
+      
+      expect(pElement.properties).toEqual({
+        style: 'margin: 10px; color: red; font-size: 14px;'
+      });
+    });
   });
 });

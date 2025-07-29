@@ -58,7 +58,7 @@ export default function rehypeStyling() {
     }
     
     // Apply to first child element
-    if (firstChild?.type === 'element') {
+    if (firstChild?.type === 'element' && parent.children.length === 1) {
       return firstChild as Element;
     }
     

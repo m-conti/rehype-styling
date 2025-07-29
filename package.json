@@ -1,6 +1,6 @@
 {
   "name": "rehype-styling",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Rehype plugin designed for remark to extract CSS styles from Markdown text and intelligently apply them to elements",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

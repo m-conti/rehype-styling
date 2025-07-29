@@ -19,7 +19,9 @@ export default function rehypeStyling() {
     }
 
     const firstChild = parent.children[0];
-    if (firstChild && firstChild.type === 'element') {
+    if (index !== 0 && parent.children.length > 0 && parent.children[index - 1]?.type === 'element') {
+      (parent.children[index - 1] as Element).properties = { ...(parent.children[index - 1] as Element).properties, style: extractedStyle };
+    } else if (firstChild && firstChild.type === 'element') {
       firstChild.properties = { ...(firstChild.properties ?? {}), style: extractedStyle };
     } else if (parent.type === 'element') {
       (parent as Element).properties = { ...((parent as Element).properties ?? {}), style: extractedStyle };

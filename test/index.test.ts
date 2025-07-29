@@ -509,5 +509,136 @@ describe('rehype-styling', () => {
       // The li element should not have styles since the style was inside the strong element
       expect(liElement.properties).toEqual({});
     });
+
+    it('handles styles applied after elements (post-element styling)', async () => {
+      const processor = createProcessor();
+      const tree: Root = {
+        type: 'root',
+        children: [
+          {
+            type: 'element',
+            tagName: 'p',
+            properties: {},
+            children: [
+              {
+                type: 'element',
+                tagName: 'strong',
+                properties: {},
+                children: [
+                  { 
+                    type: 'text', 
+                    value: 'Important text'
+                  }
+                ]
+              },
+              { 
+                type: 'text', 
+                value: '{color: red; font-weight: 900;} that needs attention' 
+              }
+            ]
+          }
+        ]
+      };
+      
+      const result = await processor.run(tree) as Root;
+      const pElement = result.children[0] as Element;
+      const strongElement = pElement.children[0] as Element;
+      
+      // The style should be applied to the preceding strong element
+      expect(strongElement.properties).toEqual({
+        style: 'color: red; font-weight: 900;'
+      });
+      
+      // The text content after style should be cleaned up (trim removes leading space)
+      expect(pElement.children[1]).toEqual({
+        type: 'text',
+        value: 'that needs attention'
+      });
+      
+      // Strong element content should remain unchanged
+      expect(strongElement.children[0]).toEqual({
+        type: 'text',
+        value: 'Important text'
+      });
+      
+      // Parent should not have styles
+      expect(pElement.properties).toEqual({});
+    });
+
+    it('handles multiple post-element styles in sequence', async () => {
+      const processor = createProcessor();
+      const tree: Root = {
+        type: 'root',
+        children: [
+          {
+            type: 'element',
+            tagName: 'div',
+            properties: {},
+            children: [
+              {
+                type: 'element',
+                tagName: 'em',
+                properties: {},
+                children: [
+                  { 
+                    type: 'text', 
+                    value: 'Italic text'
+                  }
+                ]
+              },
+              { 
+                type: 'text', 
+                value: '{font-style: italic; color: blue;} and '
+              },
+              {
+                type: 'element',
+                tagName: 'strong',
+                properties: {},
+                children: [
+                  { 
+                    type: 'text', 
+                    value: 'bold text'
+                  }
+                ]
+              },
+              { 
+                type: 'text', 
+                value: '{font-weight: bold; color: green;} together'
+              }
+            ]
+          }
+        ]
+      };
+      
+      const result = await processor.run(tree) as Root;
+      const divElement = result.children[0] as Element;
+      
+      // Get elements by their actual positions after processing
+      const elements = divElement.children.filter(child => child.type === 'element') as Element[];
+      const emElement = elements[0];
+      const strongElement = elements[1];
+      
+      // First style should apply to em element (post-element styling)
+      expect(emElement.properties).toEqual({
+        style: 'font-style: italic; color: blue;'
+      });
+      
+      // Second style should apply to strong element (post-element styling)
+      expect(strongElement.properties).toEqual({
+        style: 'font-weight: bold; color: green;'
+      });
+      
+      // Text nodes should be cleaned up (trimmed)
+      const textNodes = divElement.children.filter(child => child.type === 'text');
+      expect(textNodes).toHaveLength(2);
+      expect(textNodes[0]).toEqual({
+        type: 'text',
+        value: 'and'
+      });
+      expect(textNodes[1]).toEqual({
+        type: 'text',
+        value: 'together'
+      });
+    });
   });
 });

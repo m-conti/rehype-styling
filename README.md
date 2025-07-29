@@ -185,15 +185,40 @@ The plugin works automatically without any configuration options. It uses smart 
 <li>Let's <strong style="color: #059669; background: #dcfce7; padding: 2px 6px; border-radius: 4px;">evaluate the environmental footprint</strong> of digital devices</li>
 ```
 
+### Post-element Styling
+
+**Input:**
+```html
+<p>Here's some <strong>important information</strong>{color: red; font-weight: 900;} to consider.</p>
+```
+
+**Output:**
+```html
+<p>Here's some <strong style="color: red; font-weight: 900;">important information</strong> to consider.</p>
+```
+
+**Multiple Post-element Styles:**
+```html
+<div><em>Italic text</em>{font-style: italic; color: blue;} and <strong>bold text</strong>{font-weight: bold; color: green;} together</div>
+```
+
+**Output:**
+```html
+<div><em style="font-style: italic; color: blue;">Italic text</em> and <strong style="font-weight: bold; color: green;">bold text</strong> together</div>
+```
+
 ## How It Works
 
 1. The plugin visits all text nodes in the HTML tree
 2. It looks for text that starts with CSS style declarations wrapped in curly braces: `{css-styles}`
 3. When found, it extracts the CSS styles and removes the curly brace syntax from the text
-4. It applies the extracted styles using smart logic:
-   - If the first child element exists, styles are applied to it
-   - If the first child is not an element, styles are applied to the parent element
+4. It applies the extracted styles using smart logic with the following priority:
+   - **Post-element styling**: If there's a preceding element sibling, styles are applied to it (e.g., `<strong>text</strong>{styles}`)
+   - **First child element**: If the first child of the parent is an element, styles are applied to it
+   - **Parent element**: If no suitable child element exists, styles are applied to the parent element
 5. If the text becomes empty after removing the style syntax, the text node is removed entirely
+
+This approach ensures styles are applied to the most semantically appropriate element, with post-element styling taking priority to support both `**{styles}text**` and `**text**{styles}` patterns.
 
 ## Use Cases
 
@@ -242,28 +267,42 @@ Check out our {color: #3182ce; text-decoration: underline; font-weight: 500;}[ma
 
 ### Styling Bold/Strong Text
 
-The plugin works seamlessly with Markdown bold text (`**bold**` or `__bold__`) by applying styles directly to the `<strong>` element:
+The plugin works seamlessly with Markdown bold text (`**bold**` or `__bold__`) by applying styles directly to the `<strong>` element in two ways:
+
+#### Pre-element Styling (Inside the Element)
+```markdown
+Here's some **{color: #dc2626; font-weight: 900;}important bold text** that stands out.
+```
+
+#### Post-element Styling (After the Element)
+```markdown
+Here's some **important bold text**{color: #dc2626; font-weight: 900;} that stands out.
+```
+
+Both approaches generate the same result:
+```html
+<p>Here's some <strong style="color: #dc2626; font-weight: 900;">important bold text</strong> that stands out.</p>
+```
+
+**More Examples:**
 
 ```markdown
-Here's some regular text with **{color: #dc2626; font-weight: 900;}important bold text** that stands out.
-
 - Let's **{color: #059669; background: #dcfce7; padding: 2px 6px; border-radius: 4px;}evaluate the environmental footprint** of digital devices
-- Consider **{color: #7c3aed; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);}technical specifications** when making decisions
-- Always **{background: linear-gradient(45deg, #ff6b6b, #4ecdc4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}double-check your work** before submitting
+- Consider **technical specifications**{color: #7c3aed; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);} when making decisions
+- Always **double-check your work**{background: linear-gradient(45deg, #ff6b6b, #4ecdc4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;} before submitting
 
 You can also combine with other formatting:
 - **{font-size: 1.2em; color: #1e40af;}Bold and larger text**
-- ***{color: #be185d; font-style: italic;}Bold italic with custom color***
-- **{border: 2px solid #f59e0b; padding: 4px 8px; border-radius: 6px; background: #fef3c7;}Boxed important text**
+- ***Bold italic text***{color: #be185d; font-style: italic;}
+- **Boxed important text**{border: 2px solid #f59e0b; padding: 4px 8px; border-radius: 6px; background: #fef3c7;}
 ```
 
 This generates HTML like:
 ```html
-<p>Here's some regular text with <strong style="color: #dc2626; font-weight: 900;">important bold text</strong> that stands out.</p>
-
 <ul>
   <li>Let's <strong style="color: #059669; background: #dcfce7; padding: 2px 6px; border-radius: 4px;">evaluate the environmental footprint</strong> of digital devices</li>
   <li>Consider <strong style="color: #7c3aed; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">technical specifications</strong> when making decisions</li>
+  <li>Always <strong style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">double-check your work</strong> before submitting</li>
 </ul>
 ```
 
